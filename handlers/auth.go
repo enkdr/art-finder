@@ -41,12 +41,12 @@ func init() {
 	jwtSecret = []byte(os.Getenv("JWT_SECRET"))
 }
 
-func GitHubLogin(c *gin.Context) {
+func (h *Handler) GitHubLogin(c *gin.Context) {
 	url := githubOauthConfig.AuthCodeURL("state", oauth2.AccessTypeOffline)
 	c.Redirect(http.StatusFound, url)
 }
 
-func GitHubCallback(c *gin.Context) {
+func (h *Handler) GitHubCallback(c *gin.Context) {
 	state := c.Query("state")
 	if state != "state" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid state"})

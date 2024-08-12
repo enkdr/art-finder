@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgis/postgis:latest  # Use the PostGIS enabled PostgreSQL image
+    environment:
+      POSTGRES_DB: artfinder
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+    volumes:
+      - ./database/schema:/docker-entrypoint-initdb.d  # Mount your SQL scripts
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+
+  go-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      PORT: 8080
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: username
+      DB_PASSWORD: password
+      DB_NAME: artfinder
+    networks:
+      - app-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+
+networks:
+  app-network:
+    driver: bridge

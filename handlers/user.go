@@ -1,14 +1,19 @@
+// handlers/user.go
+
 package handlers
 
 import (
-	"net/http"
+    "net/http"
 
-	"github.com/gin-gonic/gin"
+    "github.com/gin-gonic/gin"
 )
 
-func UserHome(c *gin.Context) {
-	c.HTML(http.StatusOK, "user.tmpl", gin.H{
-		"Title": "User - Art Finder",
-	})
+func (h *Handler) UserHome(c *gin.Context) {
+    // Example of using the database connection, replace this with actual queries
+    // rows, err := h.DB.Query("SELECT ...")
+    // Handle rows and err as needed
 
+    c.HTML(http.StatusOK, "user.tmpl", gin.H{
+        "Title": "User - Art Finder",
+    })
 }
