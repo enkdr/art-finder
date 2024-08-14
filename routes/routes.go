@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"art-finder/handlers"
-	"art-finder/middleware"
+	"artfinder/handlers"
+	"artfinder/middleware"
 
 	"github.com/jmoiron/sqlx"
 

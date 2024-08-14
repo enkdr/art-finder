@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"art-finder/config"
+	"artfinder/config"
 
 	_ "github.com/lib/pq"
 

@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"art-finder/utils"
+	"artfinder/utils"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"

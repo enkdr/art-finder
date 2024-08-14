@@ -1,4 +1,4 @@
-module art-finder
+module artfinder
 
 go 1.22.1
 

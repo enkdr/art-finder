@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"art-finder/utils"
+	"artfinder/utils"
 	"fmt"
 	"net/http"
 	"os"

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"art-finder/config"
-	"art-finder/database"
-	"art-finder/routes"
+	"artfinder/config"
+	"artfinder/database"
+	"artfinder/routes"
 	"log"
 	"net/http"
 	"os"
