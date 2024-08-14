@@ -9,12 +9,14 @@
 </head>
 <body>
     <header>
-        <h1>Welcome to Art Finder</h1>
+        <nav class="navbar">
+            <button class="nav-toggle" aria-label="Toggle navigation">&#9776;</button>
+            <ul class="nav-list">
+                <li><a href="/">Home</a></li>
+                <li><a href="/auth/github">Login with GitHub</a></li>
+                <li><a href="/example">Example</a></li>
+            </ul>
+        </nav>
     </header>
-    <nav>
-        <a href="/">Home</a>
-        <a href="/example">Example</a>
-        <a href="/user">User</a>
-    </nav>
     <main>
 {{end}}

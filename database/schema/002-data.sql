@@ -1,33 +1,30 @@
--- dummy data
--- Insert into the styles table
+-- Insert into styles
 INSERT INTO styles (id, name) VALUES
-    (gen_random_uuid(), 'Abstract'),
     (gen_random_uuid(), 'Impressionism'),
-    (gen_random_uuid(), 'Realism');
+    (gen_random_uuid(), 'Cubism'),
+    (gen_random_uuid(), 'Surrealism');
 
--- Insert into the gallery table
+-- Insert into gallery
 INSERT INTO gallery (id, title, location, notes) VALUES
-    (gen_random_uuid(), 'National Gallery', ST_GeogFromText('SRID=4326;POINT(-77.0427 38.8921)'), 'A renowned art gallery in Washington, D.C.'),
-    (gen_random_uuid(), 'Tate Modern', ST_GeogFromText('SRID=4326;POINT(-0.0984 51.5076)'), 'An art gallery located in London, known for its contemporary art collections.');
+    (gen_random_uuid(), 'The Louvre', ST_GeogFromText('SRID=4326;POINT(2.3364 48.8606)'), 'World-famous art museum in Paris.'),
+    (gen_random_uuid(), 'MoMA', ST_GeogFromText('SRID=4326;POINT(-73.9654 40.7614)'), 'Museum of Modern Art in New York.');
 
--- Insert into the artist table
-INSERT INTO artist (id, first_name, last_name, bio, nationality, styles_id) VALUES
-    (gen_random_uuid(), 'Claude', 'Monet', 'A French painter and a founder of French Impressionist painting.', 'French', (SELECT id FROM styles WHERE name = 'Impressionism')),
-    (gen_random_uuid(), 'Pablo', 'Picasso', 'A Spanish painter and sculptor, a major figure in the development of modern art.', 'Spanish', (SELECT id FROM styles WHERE name = 'Abstract')),
-    (gen_random_uuid(), 'Gustav', 'Klimt', 'An Austrian symbolist painter and one of the most prominent members of the Vienna Secession movement.', 'Austrian', (SELECT id FROM styles WHERE name = 'Realism'));
+-- Insert into artist
+INSERT INTO artist (id, first_name, last_name, image, bio, nationality, styles_id) VALUES
+    (gen_random_uuid(), 'Claude', 'Monet', 'https://example.com/monet.jpg', 'French painter, a founder of Impressionism.', 'French', (SELECT id FROM styles WHERE name = 'Impressionism')),
+    (gen_random_uuid(), 'Pablo', 'Picasso', 'https://example.com/picasso.jpg', 'Spanish painter, sculptor, and a key figure in Cubism.', 'Spanish', (SELECT id FROM styles WHERE name = 'Cubism'));
 
--- Insert into the artwork table
-INSERT INTO artwork (id, artist_id, title, description, year, type_id, location, gallery_id) VALUES
-    (gen_random_uuid(), (SELECT id FROM artist WHERE first_name = 'Claude'), 'Water Lilies', 'A series of approximately 250 oil paintings depicting Claude Monets flower garden at Giverny.', 1919, (SELECT id FROM artist WHERE first_name = 'Claude'), ST_GeogFromText('SRID=4326;POINT(-77.0427 38.8921)'), (SELECT id FROM gallery WHERE title = 'National Gallery')),
-    (gen_random_uuid(), (SELECT id FROM artist WHERE first_name = 'Pablo'), 'Les Demoiselles dAvignon', 'A large oil painting by Pablo Picasso, considered a masterpiece of modern art.', 1907, (SELECT id FROM artist WHERE first_name = 'Pablo'), ST_GeogFromText('SRID=4326;POINT(-0.0984 51.5076)'), (SELECT id FROM gallery WHERE title = 'Tate Modern')),
-    (gen_random_uuid(), (SELECT id FROM artist WHERE first_name = 'Gustav'), 'The Kiss', 'An iconic painting by Gustav Klimt, widely recognized for its decorative and sensual qualities.', 1908, (SELECT id FROM artist WHERE first_name = 'Gustav'), ST_GeogFromText('SRID=4326;POINT(-77.0427 38.8921)'), (SELECT id FROM gallery WHERE title = 'National Gallery'));
+-- Insert into artwork
+INSERT INTO artwork (id, artist_id, title, description, image, year, styles_id, location, gallery_id) VALUES
+    (gen_random_uuid(), (SELECT id FROM artist WHERE first_name = 'Claude'), 'Water Lilies', 'A series of Impressionist paintings by Claude Monet.', 'https://example.com/waterlilies.jpg', 1919, (SELECT id FROM styles WHERE name = 'Impressionism'), ST_GeogFromText('SRID=4326;POINT(2.3364 48.8606)'), (SELECT id FROM gallery WHERE title = 'The Louvre')),
+    (gen_random_uuid(), (SELECT id FROM artist WHERE first_name = 'Pablo'), 'Les Demoiselles dAvignon', 'A revolutionary Cubist painting by Pablo Picasso.', 'https://example.com/demoiselles.jpg', 1907, (SELECT id FROM styles WHERE name = 'Cubism'), ST_GeogFromText('SRID=4326;POINT(-73.9654 40.7614)'), (SELECT id FROM gallery WHERE title = 'MoMA'));
 
--- Insert into the profile table
+-- Insert into profile
 INSERT INTO profile (id, profilename, email) VALUES
-    (gen_random_uuid(), 'art_lover', 'art_lover@example.com'),
-    (gen_random_uuid(), 'museum_visitor', 'museum_visitor@example.com');
+    (gen_random_uuid(), 'john_doe', 'john.doe@example.com'),
+    (gen_random_uuid(), 'jane_smith', 'jane.smith@example.com');
 
--- Insert into the profile_artwork table
+-- Insert into profile_artwork
 INSERT INTO profile_artwork (profile_id, artwork_id) VALUES
-    ((SELECT id FROM profile WHERE profilename = 'art_lover'), (SELECT id FROM artwork WHERE title = 'Water Lilies')),
-    ((SELECT id FROM profile WHERE profilename = 'museum_visitor'), (SELECT id FROM artwork WHERE title = 'Les Demoiselles dAvignon'));
+    ((SELECT id FROM profile WHERE profilename = 'john_doe'), (SELECT id FROM artwork WHERE title = 'Water Lilies')),
+    ((SELECT id FROM profile WHERE profilename = 'jane_smith'), (SELECT id FROM artwork WHERE title = 'Les Demoiselles dAvignon'));
