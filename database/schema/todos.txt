@@ -1,0 +1,42 @@
+tablename = user
+id: uuid, primary key
+username: varchar(255), not null 
+email: varchar(255), not null, unique
+favourites: many to many using table users_artworks
+created: timestamptz default current_timestamp
+updated: timestamptz default current_timestamp
+
+tablename = artwork
+id: uuid, primary key
+artist (references = artist on artist id)
+title: varchar(255), not null
+description: text
+type: (references = artist on artist id)
+location: geography(point, 4326) not null
+gallery: (references gallery on gallery id)
+created: timestamptz default current_timestamp
+updated: timestamptz default current_timestamp
+
+tablename = user_artwork
+user.id (fk = user.id)
+artwork.id (fk = artwork.id)
+
+tablename = artist
+id: uuid, primary key
+first_name: varchar(255), not null
+last_name: varchar(255), not null
+bio: text
+nationality: varchar(255)
+style: (references = style on style id)
+created: timestamptz default current_timestamp
+updated: timestamptz default current_timestamp
+
+tablename = gallery
+id: uuid, primary key
+title: varchar(255) not null
+location: geography(point, 4326) not null
+notes: text
+created: timestamptz default current_timestamp
+updated: timestamptz default current_timestamp
+
+

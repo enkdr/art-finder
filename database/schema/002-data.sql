@@ -1,20 +1,39 @@
--- Insert sample data into the "artists" table
-INSERT INTO artists (name, bio, nationality, style) VALUES
-    ('Vincent van Gogh', 'Post-Impressionist painter known for his vivid works.', 'Dutch', 'Post-Impressionism'),
-    ('Pablo Picasso', 'Spanish painter and sculptor known for co-founding Cubism.', 'Spanish', 'Cubism'),
-    ('Claude Monet', 'French painter and a founder of French Impressionist painting.', 'French', 'Impressionism'),
-    ('Frida Kahlo', 'Mexican painter known for her self-portraits and works inspired by Mexican culture.', 'Mexican', 'Surrealism');
+-- Insert into the artist table
+INSERT INTO artist (id, first_name, last_name, bio, nationality, style_id)
+VALUES
+    (gen_random_uuid(), 'Pablo', 'Picasso', 'A Spanish painter, sculptor, printmaker, ceramicist and theatre designer', 'Spanish', NULL),
+    (gen_random_uuid(), 'Frida', 'Kahlo', 'A Mexican painter known for her many portraits and works inspired by the nature and artifacts of Mexico', 'Mexican', NULL);
 
--- Insert sample data into the "artworks" table with PostGIS geography type
-INSERT INTO artworks (title, description, type, location, artist_id) VALUES
-    ('Starry Night', 'A depiction of the view from the asylum room.', 'painting', ST_MakePoint(-73.9772, 40.7616)::geography, 1),
-    ('Guernica', 'A large black and white painting capturing the horrors of war.', 'painting', ST_MakePoint(-73.9772, 40.7616)::geography, 2),
-    ('Water Lilies', 'A series of oil paintings depicting Monet’s water lily pond.', 'painting', ST_MakePoint(2.2950, 48.8738)::geography, 3),
-    ('The Two Fridas', 'A double self-portrait by Frida Kahlo.', 'painting', ST_MakePoint(-99.1332, 19.4326)::geography, 4);
+-- Insert into the style table
+INSERT INTO style (id, name)
+VALUES
+    (gen_random_uuid(), 'Cubism'),
+    (gen_random_uuid(), 'Surrealism');
 
--- Insert sample data into the "users" table
-INSERT INTO users (username, email, favorites) VALUES
-    ('johndoe', 'johndoe@example.com', ARRAY[1, 2]),
-    ('janedoe', 'janedoe@example.com', ARRAY[3, 4]),
-    ('alice', 'alice@example.com', ARRAY[1, 3]),
-    ('bob', 'bob@example.com', ARRAY[2, 4]);
+-- Assuming the style_id in the artist table refers to a style table entry
+UPDATE artist SET style_id = (SELECT id FROM style WHERE name = 'Cubism') WHERE first_name = 'Pablo';
+UPDATE artist SET style_id = (SELECT id FROM style WHERE name = 'Surrealism') WHERE first_name = 'Frida';
+
+-- Insert into the gallery table
+INSERT INTO gallery (id, title, location, notes)
+VALUES
+    (gen_random_uuid(), 'The Metropolitan Museum of Art', ST_GeogFromText('SRID=4326;POINT(-73.9632 40.7794)'), 'One of the worlds largest and finest art museums.'),
+    (gen_random_uuid(), 'Museo Frida Kahlo', ST_GeogFromText('SRID=4326;POINT(-99.1627 19.3559)'), 'Also known as the Blue House, it is a historic house museum dedicated to the life and work of Mexican artist Frida Kahlo.');
+
+-- Insert into the artwork table
+INSERT INTO artwork (id, artist_id, title, description, type_id, location, gallery_id)
+VALUES
+    (gen_random_uuid(), (SELECT id FROM artist WHERE first_name = 'Pablo'), 'Les Demoiselles dAvignon', 'A large oil painting considered as the most famous example of Cubism.', (SELECT id FROM artist WHERE first_name = 'Pablo'), ST_GeogFromText('SRID=4326;POINT(-73.9632 40.7794)'), (SELECT id FROM gallery WHERE title = 'The Metropolitan Museum of Art')),
+    (gen_random_uuid(), (SELECT id FROM artist WHERE first_name = 'Frida'), 'The Two Fridas', 'An oil painting which depicts two versions of Kahlo seated together.', (SELECT id FROM artist WHERE first_name = 'Frida'), ST_GeogFromText('SRID=4326;POINT(-99.1627 19.3559)'), (SELECT id FROM gallery WHERE title = 'Museo Frida Kahlo'));
+
+-- Insert into the users table
+INSERT INTO users (id, username, email)
+VALUES
+    (gen_random_uuid(), 'artlover', 'artlover@example.com'),
+    (gen_random_uuid(), 'gallerygoer', 'gallerygoer@example.com');
+
+-- Insert into the user_artwork table
+INSERT INTO user_artwork (user_id, artwork_id)
+VALUES
+    ((SELECT id FROM users WHERE username = 'artlover'), (SELECT id FROM artwork WHERE title = 'Les Demoiselles dAvignon')),
+    ((SELECT id FROM users WHERE username = 'gallerygoer'), (SELECT id FROM artwork WHERE title = 'The Two Fridas'));
