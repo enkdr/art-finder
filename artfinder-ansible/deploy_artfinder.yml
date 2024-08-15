@@ -1,0 +1,158 @@
+---
+- name: Setup server with PostgreSQL, Nginx, Go, and Let's Encrypt
+  hosts: your_target_server
+  become: yes
+  vars:
+    domain_name: example.com
+    go_version: "1.22"
+    go_app_dir: /opt/myapp
+    go_app_name: myapp
+  tasks:
+    - name: Update and upgrade apt packages
+      apt:
+        update_cache: yes
+        upgrade: yes
+
+    - name: Install necessary packages
+      apt:
+        name:
+          - build-essential
+          - libssl-dev
+          - zlib1g-dev
+          - libbz2-dev
+          - libreadline-dev
+          - libsqlite3-dev
+          - wget
+          - curl
+          - llvm
+          - libncurses5-dev
+          - libncursesw5-dev
+          - xz-utils
+          - tk-dev
+          - libffi-dev
+          - liblzma-dev
+          - python3-openssl
+          - git
+          - nginx
+          - postgresql
+          - postgresql-contrib
+        state: present
+
+    - name: Install Go
+      shell: |
+        wget https://dl.google.com/go/go{{ go_version }}.linux-amd64.tar.gz
+        tar -C /usr/local -xzf go{{ go_version }}.linux-amd64.tar.gz
+        echo 'export PATH=$PATH:/usr/local/go/bin' >> /etc/profile
+        source /etc/profile
+      args:
+        creates: /usr/local/go
+
+    - name: Install Certbot
+      apt:
+        name: python3-certbot-nginx
+        state: present
+
+    - name: Configure PostgreSQL to accept external connections
+      lineinfile:
+        path: /etc/postgresql/*/main/postgresql.conf
+        regexp: '^#?(listen_addresses\s*=\s*)\S+.*$'
+        line: "listen_addresses = '*'"
+        state: present
+      notify: restart postgresql
+
+    - name: Allow access to PostgreSQL from all
+      lineinfile:
+        path: /etc/postgresql/*/main/pg_hba.conf
+        line: "host all all 0.0.0.0/0 md5"
+        state: present
+      notify: restart postgresql
+
+    - name: Configure Nginx for the domain
+      copy:
+        dest: /etc/nginx/sites-available/{{ domain_name }}
+        content: |
+          server {
+              listen 80;
+              server_name {{ domain_name }};
+              location / {
+                  proxy_pass http://localhost:8080;
+                  proxy_set_header Host $host;
+                  proxy_set_header X-Real-IP $remote_addr;
+                  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              }
+          }
+
+    - name: Enable Nginx site
+      file:
+        src: /etc/nginx/sites-available/{{ domain_name }}
+        dest: /etc/nginx/sites-enabled/{{ domain_name }}
+        state: link
+        force: yes
+
+    - name: Remove default Nginx site
+      file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+
+    - name: Test Nginx configuration
+      command: nginx -t
+
+    - name: Reload Nginx
+      service:
+        name: nginx
+        state: reloaded
+
+    - name: Obtain SSL certificates from Let's Encrypt
+      shell: certbot --nginx -d {{ domain_name }} --non-interactive --agree-tos -m your-email@example.com
+
+    - name: Create Go app directory
+      file:
+        path: "{{ go_app_dir }}"
+        state: directory
+        owner: root
+        group: root
+        mode: 0755
+
+    - name: Copy Go application source code
+      copy:
+        src: ./path_to_your_go_app/
+        dest: "{{ go_app_dir }}/"
+        owner: root
+        group: root
+        mode: 0755
+
+    - name: Build Go application
+      shell: |
+        cd {{ go_app_dir }}
+        /usr/local/go/bin/go build -o {{ go_app_name }}
+      args:
+        creates: "{{ go_app_dir }}/{{ go_app_name }}"
+
+    - name: Create systemd service file for Go app
+      copy:
+        dest: /etc/systemd/system/{{ go_app_name }}.service
+        content: |
+          [Unit]
+          Description=Go Application Service
+          After=network.target
+
+          [Service]
+          ExecStart={{ go_app_dir }}/{{ go_app_name }}
+          WorkingDirectory={{ go_app_dir }}
+          Restart=always
+          User=root
+
+          [Install]
+          WantedBy=multi-user.target
+
+    - name: Enable and start Go application service
+      systemd:
+        name: "{{ go_app_name }}"
+        enabled: yes
+        state: started
+
+  handlers:
+    - name: restart postgresql
+      service:
+        name: postgresql
+        state: restarted
