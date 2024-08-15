@@ -1,0 +1,1 @@
+import{a as n}from"./art-card-template.js";customElements.define("art-card",class extends HTMLElement{constructor(){super(),this.attachShadow({mode:"open"})}connectedCallback(){console.log("art-card"),this.render()}render(){const e=document.createElement("template");e.innerHTML=n;const t=e.content.cloneNode(!0);this.shadowRoot.appendChild(t)}});

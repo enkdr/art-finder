@@ -1,0 +1,28 @@
+{
+  "../css/styles.css": {
+    "file": "styles.css",
+    "src": "../css/styles.css",
+    "isEntry": true
+  },
+  "../js/art-card-template.js": {
+    "file": "art-card-template.js",
+    "name": "art-card-template",
+    "src": "../js/art-card-template.js",
+    "isEntry": true
+  },
+  "../js/art-card.js": {
+    "file": "art-card.js",
+    "name": "art-card",
+    "src": "../js/art-card.js",
+    "isEntry": true,
+    "imports": [
+      "../js/art-card-template.js"
+    ]
+  },
+  "../js/main.js": {
+    "file": "main.js",
+    "name": "main",
+    "src": "../js/main.js",
+    "isEntry": true
+  }
+}

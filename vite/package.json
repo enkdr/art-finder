@@ -1,0 +1,11 @@
+{
+    "devDependencies": {
+        "glob": "^11.0.0",
+        "sync": "^0.2.5",
+        "vite": "^5.4.1"
+    },
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build"
+    }
+}
