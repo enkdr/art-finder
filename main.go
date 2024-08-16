@@ -40,7 +40,9 @@ func main() {
 
 	router.Use(sessions.Sessions("jwtToken", store))
 
-	router.LoadHTMLGlob("templates/*.tmpl")
+	// router.SetFuncMap(utils.FuncMap())
+
+	router.LoadHTMLGlob("templates/*.html")
 	routes.RegisterRoutes(router, db)
 
 	router.Run(":8080")

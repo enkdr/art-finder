@@ -7,7 +7,7 @@ import (
 )
 
 func (h *Handler) Home(c *gin.Context) {
-	c.HTML(http.StatusOK, "home.tmpl", gin.H{
+	c.HTML(http.StatusOK, "home.html", gin.H{
 		"Title": "Home - Art Finder",
 	})
 }
