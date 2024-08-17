@@ -24,5 +24,14 @@
     "name": "main",
     "src": "../js/main.js",
     "isEntry": true
+  },
+  "../js/map.js": {
+    "file": "map.js",
+    "name": "map",
+    "src": "../js/map.js",
+    "isEntry": true,
+    "css": [
+      "map.css"
+    ]
   }
 }
